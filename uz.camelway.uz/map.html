@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0">
+<title>ИП ООО «CAMELWAY CHINA</title>
+<style>
+* {margin:0;padding:0}
+body, html{width:100%;height:100%;margin:0}
+h1 {font-size:18px}
+#camelwaymap {width:100%;height:100%;overflow:hidden}
+</style>
+<script src="https://api-maps.yandex.ru/2.1/?apikey=ecf49a82-08e6-447b-8c74-b59282b8534e&lang=uz" type="text/javascript"></script>
+<script type="text/javascript">
+    var year = new Date().getFullYear();
+    ymaps.ready(function(){
+        var camelwaymap = new ymaps.Map('camelwaymap', {
+           center: [41.245888, 69.217518], 
+            zoom: 12
+        });
+        var uzbranchmark = new ymaps.Placemark(camelwaymap.getCenter(), {
+            hintContent: 'Click to Show detail Info',
+            balloonContentHeader: 'ИП ООО «CAMELWAY CHINA',
+            balloonContent: '<img src="https://data.camelway.net/static/images/camelway-180x180.png" style="float:right;margin-left:10px;margin-top:15px;width:80px;height:80px"><p><strong>Manzil:</strong> Ташкентская область, Зангиятинский район, УзгаришҚФЕ ,ул.Дилхуш 1</p><p><strong>Telefon:</strong> (+99890) 8053999, (+99890) 0085888, (+99890) 9181666</p><p><strong>Veb-sayti:</strong> <a href="https://www.camelway.uz/?utm_souce=map.camelway.uz" target="_top">www.camelway.uz</a>,  <a href="https://www.camelway.ru/?utm_souce=map.camelway.uz" target="_top">www.camelway.ru</a>, <a href="https://ru.camelway.com/?utm_souce=map.camelway.uz" target="_top">ru.camelway.com</a></p>',
+            balloonContentFooter: '&copy; '+year+' ИП ООО «CAMELWAY CHINA»'
+        }, {
+            preset: "islands#blueDotIcon",
+            openBalloonOnClick: true,
+            openEmptyBalloon: true,
+            openHintOnHover: true,
+            visible: true
+        });
+        camelwaymap.geoObjects.add(uzbranchmark);
+        uzbranchmark.balloon.open();
+    });
+</script>
+<body>
+<div id="camelwaymap"></div>
+</body>
+</html>

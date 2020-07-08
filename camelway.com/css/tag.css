@@ -1,0 +1,32 @@
+.tagstats {
+    line-height: 30px;
+}
+.tag-list li {
+    width: 100%;
+    padding: 10px;
+    margin: 20px 0;
+    box-sizing: border-box;
+}
+.tag-list li:nth-child(2n+1) {
+    background: #f5f5f5;
+}
+.tag-list h3 {
+    margin: 10px 0;
+    text-align: center;
+}
+.tag-list .metadata {
+    margin: 10px 0;
+    font-size: 14px;
+}
+.tag-list .metadata a:hover {
+    text-decoration: underline;
+}
+.tag-list .keywords:before {
+    content: '\e938';
+    margin-right: 3px;
+}
+.tag-list .pubdate:before {
+    content: '\e948';
+    margin-right: 3px;
+    margin-left: 5px;
+}
