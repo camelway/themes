@@ -1,0 +1,106 @@
+.search-page {
+    margin: 60px auto;
+}
+.search-page .count {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    color: #999;
+}
+.search-page .results {
+    margin-top: 30px;
+}
+.search-page .item {
+    width: 100%;
+    margin-top: 30px;
+    color: #999;
+    clear: both;
+    overflow: hidden;
+}
+.search-page .top {
+    margin-top: 10px;
+    background: #f6f6f6;
+}
+.search-page .item h2 {
+    font-size: 24px;
+    color: #333;
+}
+.search-page .thumbnail {
+    float: left;
+    display: block;
+    width: 105px;
+    margin: 5px 15px 0 0;
+}
+.search-page .top .thumbnail {
+    width: 220px;
+    margin-right: 20px;
+}
+.search-page .top .description {
+    float: right;
+    width: calc(100% - 240px);
+}
+.search-page .top h2 {
+    margin-top: 10px;
+}
+.search-page .top p {
+    margin-top: 10px;
+}
+.search-page .item .url {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #549ccf;
+}
+.search-page .params {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.search-page .params li {
+    width: 45%;
+}
+.search-page .params li span {
+    color: #e11d26;
+}
+.search-page .params li:before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    vertical-align: sub;
+    background-image: url('{{template_url}}media/production-args-icons.png');
+    background-repeat: no-repeat;
+}
+.search-page .params li:nth-child(2):before {
+    background-position: 0 -17px;
+}
+.search-page .params li:nth-child(3):before {
+    background-position: 0 -35px;
+}
+.search-page .params li:nth-child(4):before {
+    background-position: 0 -54px;
+}
+.search-page .loadmore {
+    width: 100%;
+    margin-top: 20px;
+    line-height: 44px;
+    color: #999;
+    background: #f6f5f5;
+    text-align: center;
+    cursor: pointer;
+    transition: all .3s;
+}
+.search-page .loadmore:hover {
+    color: #333;
+    background: #ddd;
+}
+
+@media(max-width:800px){
+    .search-page .top p {
+        display: none;
+    }
+    .search-page .params li {
+        width: 100%;
+    }
+
+}
