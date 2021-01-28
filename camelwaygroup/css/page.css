@@ -359,6 +359,9 @@
     -webkit-line-clamp: 2;
     overflow: hidden;
 }
+.page-common {
+    margin: 10px auto;
+}
 @media(max-width:1366px){
     .about-head video {
         width: 50%;

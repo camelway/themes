@@ -1,0 +1,37 @@
+.main {
+    margin-top: 30px;
+    min-height: calc(100vh - 604px);
+}
+.main .description {
+    margin: 20px 0;
+    color: #a3a8ae
+}
+/**热门产品**/
+.hotdeals {
+    margin-top: 20px;
+}
+.hot-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.hot-items li {
+    width: 25%;
+    margin-top: 15px;
+    line-height: 1em;
+    color: #3778e4;
+  
+}
+.hot-items a {
+    text-decoration: underline;
+}
+@media(max-width:800px){
+    .hot-items li {
+        width: 30%;
+    }
+}
+@media(max-width:400px){
+    .hot-items li {
+        width: 100%;
+    }
+}

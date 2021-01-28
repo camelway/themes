@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title><?php dm_title()?></title>
-<link rel="dns-prefetch" href="//data.camelway.net">
 <link rel="icon" href="<?php dminfo('template_url')?>media/favicon.ico">
 <link rel="apple-touch-icon-precompose" href="<?php dminfo('template_url')?>media/touch-icon.png">
 <link rel="alternate" type="application/atom+xml" href="<?php dminfo('atom_url')?>">
@@ -20,10 +19,17 @@ the_google_schema();
 }
 load_style();
 ?>
+<?php echo get_option('gloabaljs')?>
 <script>
     var supportwebp = (function(){var elem = document.createElement('canvas');if (!!(elem.getContext && elem.getContext('2d'))) {return elem.toDataURL('image/webp').indexOf('data:image/webp') == 0;}return false;})();
     var camelwaydatalayer = (function(){
-        var data = JSON.parse(window.localStorage.getItem('camelwaydata')) || {'commentsliked':Array(),'postsliked':Array(),'postsdisliked':Array(), 'entrypage': window.location.href};
+        var data;
+        if(!window.localStorage.getItem('camelwaydata')){
+            data = {'commentsliked':Array(),'postsliked':Array(),'postsdisliked':Array(), 'entrypage': window.location.href};
+            window.localStorage.setItem('camelwaydata', JSON.stringify(data));
+        }else{
+            data = JSON.parse(window.localStorage.getItem('camelwaydata'));
+        }
         function save(){
             window.localStorage.setItem('camelwaydata', JSON.stringify(data));
         }
@@ -144,6 +150,7 @@ load_style();
         var user_email = obj.user_email.value.trim();
         var company =  obj.company ? obj.company.value.trim() : '';
         var content = obj.content.innnerText || obj.content.value;
+        var post_id = obj.post_ID ? obj.post_ID.value : 0;
         if(company !='' )
             content += "\r\nCompany: "+company;
         if(content !='')
@@ -157,11 +164,14 @@ load_style();
         async_request({
             'method': "POST",
             'url': ajaxurl,
-            'data': {'user_name':user_name,'user_mobile':user_mobile,'user_email':user_email,'content':content},
+            'data': {'user_name':user_name,'user_mobile':user_mobile,'user_email':user_email,'content':content,'post_ID':post_id},
             'callback': function(data){
                 var result = JSON.parse(data);
                 if(result.message && obj.querySelector('.result'))
                     obj.querySelector('.result').innerHTML = result.message;
+                if(result.code == 200){
+                   <?php echo get_option('conversionjs');?>
+                }
                 obj.removeChild(doingajax); 
                 obj.submit.removeAttribute('disabled');
             }
@@ -230,7 +240,6 @@ load_style();
                 window.document.body.removeChild(div);   
                 window.document.body.classList.remove('overflowhidden');
             });
-
         });
 
         if(!supportwebp){
@@ -247,8 +256,9 @@ load_style();
             }, true);
             var images = document.querySelectorAll('img');
             for(var i in images){
-                var imagesrc = images[i].src;
+                var imagesrc = images[i].currentSrc || images[i].src;
                 if(imagesrc && imagesrc.indexOf(window.location.host) > 0){
+                    images[i].setAttribute('srcset', '');
                     if(imagesrc.match(/^[^\?]+\.webp/)){
                         images[i].src  = ajax_url+'?action=webp2jpg&f='+encodeURIComponent(imagesrc);
                     }else if(imagesrc.match(/^[^\?]+\.php\?action=/)){
@@ -263,7 +273,7 @@ load_style();
         async_request({
             "method": "POST",
             "url": ajax_url+"?action=viewed&id=<?php the_ID();?>",
-            "callback": function(data){console.log(data)}
+            "callback": function(data){}
         });
         var commentform = window.document.querySelector('.comments .comment-form');
         var commentlist = window.document.querySelector('.comments .comments-list');
@@ -340,8 +350,8 @@ load_style();
                 if(commentform.querySelector('.replyto'))
                     commentform.querySelector('.message').removeChild(commentform.querySelector('.replyto'));
             });
-            commentform.addEventListener('keydown', function(){
-                if(commentinput.innerHTML != '' && nameinput.innerHTML != '' && emailinput.innerHTML != '' && emailinput.innerHTML.match(/^[a-zA-Z0-9\.\-\_]+\@[a-zA-Z0-9\.\-\_]+\.[a-zA-Z]{1,10}$/i)){
+            commentform.addEventListener('keyup', function(){
+                if(commentinput.innerText != '' && nameinput.innerText != '' && emailinput.innerText != '' && emailinput.innerText.match(/^[a-zA-Z0-9\.\-\_]+\@[a-zA-Z0-9\.\-\_]+\.[a-zA-Z]{1,10}$/i)){
                     submitbtn.classList.remove('disabled');
                 }else{
                     submitbtn.classList.add('disabled');
@@ -356,8 +366,8 @@ load_style();
                 if(scoreinput)
                     score = scoreinput.querySelectorAll('span.star-filled').length;
                 var parentcomment = 0;
-                if(commentform.querySelector('replyto'))
-                    parentcomment = commentform.querySelector('replyto').getAttribute('data-parent');
+                if(commentform.querySelector('.replyto'))
+                    parentcomment = commentform.querySelector('.replyto').getAttribute('data-parent');
                 var wrap = document.createElement('div');
                 wrap.className = 'result';
                 wrap.innerHTML = '<span class="loading"></span>';
@@ -365,7 +375,7 @@ load_style();
                 async_request({
                     'method': 'POST',
                     'url': ajax_url+'?action=addcomment',
-                    'data': {'post_ID': <?php the_ID();?>, 'user_name': nameinput.innerHTML, 'user_email': emailinput.innerHTML, 'content': commentinput.innerHTML + 'Landing Page: ' + get_landing_page(), 'group': 'comment', 'parent': parentcomment, 'score': score},
+                    'data': {'post_ID': <?php the_ID();?>, 'user_name': nameinput.innerText, 'user_email': emailinput.innerText, 'content': commentinput.innerText + '\r\nLanding Page: ' + get_landing_page(), 'group': 'comment', 'parent': parentcomment, 'score': score},
                     'callback': function(data){
                         var result = JSON.parse(data);
                         wrap.querySelector('span').innerHTML = result.message;
@@ -420,6 +430,9 @@ load_style();
                     else if(node && node.classList.contains('reply')){
                         var comment_id = node.parentNode.getAttribute('data-comment-id');
                         var reply_name = node.parentNode.parentNode.querySelector('.name').innerHTML;
+                        if(commentinput.parentNode.querySelector('.replyto')){
+                            commentinput.parentNode.removeChild(commentform.querySelector('.replyto'));
+                        }
                         var replyinfo = document.createElement('div');
                         replyinfo.className = 'replyto';
                         replyinfo.setAttribute('data-parent', comment_id);
@@ -429,11 +442,10 @@ load_style();
                         commentinput.focus();
                     }
                     else if(node && node.classList.contains('loadmore')){
-                        var offset = node.getAttribute('data-offset');
-                        var post_id = node.getAttribute('data-id');
+                        var href = node.getAttribute('href');
                         async_request({
                             "method": "GET",
-                            "url": ajax_url+"?action=loadcomments&id="+post_id+"&offset="+offset,
+                            "url": href,
                             "callback": function(data){
                                 var result = JSON.parse(data);
                                 var comments = result['items'];
@@ -445,21 +457,27 @@ load_style();
                                     var date = comments[i]['date'];
                                     var likes = comments[i]['likes'];
                                     var score = comments[i]['score'];
+                                    var likeclass = 'like';
+                                    if(camelwaydatalayer.is_comment_liked(id)){
+                                        likeclass = 'like liked';
+                                    }
                                     var ratinghtml = '';
                                     if(score){
                                         var ratinghtml = '<span class="rating">'+'<span class="star-filled"></span>'.repeat(score) + '</span>';
                                     }
                                     var li = document.createElement('li');
-                                    li.innerHTML = '<div class="author"><img src="'+avatar+'" alt="'+author+'" class="avatar"> <span class="name">'+author+'</span>'+ratinghtml+'</div><div class="message">'+content+'</div><div class="action" data-comment-id="'+id+'"><span class="like">'+likes+'</span><span class="reply">Reply</span><span class="viewreply">View Reply</span></div><span class="pubtime">'+date+'</span>';
+                                    li.innerHTML = '<div class="author"><img src="'+avatar+'" alt="'+author+'" class="avatar"> <span class="name">'+author+'</span>'+ratinghtml+'</div><div class="message">'+content+'</div><div class="action" data-comment-id="'+id+'"><span class="'+likeclass+'">'+likes+'</span><span class="reply">Reply</span><!--<span class="viewreply">View Reply</span>--></div><span class="pubtime">'+date+'</span>';
                                     node.previousElementSibling.appendChild(li);
                                 }
                                 if(result['next']){
-                                    node.setAttribute('data-offset', result['offset'] + result['count']);
+                                    node.setAttribute('href', result['next']);
                                 }else{
                                     node.parentNode.removeChild(node);
                                 }
                             }
                         });
+                        e.preventDefault();
+                        return false;
                     }
                 });
             }
@@ -474,6 +492,9 @@ load_style();
         function showImage(index, target){
             var images = Array.from(gallery.querySelectorAll('a')).map(function(item){return item.getAttribute('href');});
             var index = index % images.length;
+            if(index <0 ){
+                index +=  images.length;
+            }
             var img = images[index];
              if(!supportwebp && img.match(/.webp$/))
                 img = ajax_url+'?action=webp2jpg&f='+encodeURI(img);
@@ -484,6 +505,7 @@ load_style();
         }
         gallery.addEventListener('click', function(e){
             var el = e.target || window.event.srcElement;
+            if(el.tagName == 'A'){ el = el.querySelector('img');}
             var container = document.createElement('div');
             var close = document.createElement('div');
             container.className = 'wrap-layer gallery-container';
@@ -639,14 +661,14 @@ load_style();
                             entry.className = 'item';
                             if(images.length == 0){
                                 entry.innerHTML = '<h2><a href="'+permalink+'">'+subtitle+'</a></h2><p>'+post_excerpt+'</p><span class="pubdate">'+post_date+'</span>'
-                            }else if(entry.length <=2){
-                                var img = ajax_url+"?action=cropimage&f="+escape(images[0]['url'])+"&width=200";
+                            }else if(images.length <=2){
+                                var img = ajax_url+"?action=cropimage&f="+escape(images[0])+"&width=200";
                                 entry.innerHTML = '<img src="'+img+'" alt="'+title+'" width="200" height="150" class="thumbnail"><h2><a href="'+permalink+'">'+subtitle+'</a></h2><p>'+post_excerpt+'</p><span class="pubdate">'+post_date+'</span>';
                             }else{
                                 var imghtml = '';
                                 for(var i in images){
                                     if(i == 3) break;
-                                    var img = ajax_url+"?action=cropimage&f="+escape(images[i]['url'])+"&width=315";
+                                    var img = ajax_url+"?action=cropimage&f="+escape(images[i])+"&width=315";
                                     imghtml += '<a href="'+permalink+'"><img src="'+img+'" alt="'+title+'" width="'+images[i]['width']+'" height="'+images[i]['height']+'"></a>';
                                 }
                                 entry.innerHTML = '<h2><a href="'+permalink+'">'+subtitle+'</a></h2><p>'+post_excerpt+'</p><div class="thumbnails">'+imghtml+'</div><span class="pubdate">'+post_date+'</span>';
@@ -662,6 +684,7 @@ load_style();
                 });
             });
         }
+        share_init('.sidebar .side-share');
 <?php } elseif(is_category(10)){ ?>
         var loadmore = document.querySelector('.loadmore');
         if(loadmore){
@@ -683,13 +706,13 @@ load_style();
                             var post_date = item['post_datetext'];
                             var author = item['author'];
                             var avatar = item['author_avatar'];
-                            var feedback_number = item['feedback_number'];
+                            var feedback_number = item['feedback_number'] > 1 ? item['feedback_number'] + ' Comments' : item['feedback_number'] + ' Comment';
                             var img = ajax_url+"?action=cropimage&f="+escape(item['post_thumbnail'])+"&width=240";
                             var entry = document.createElement('li');
                             if(item['post_thumbnail']){
-                                entry.innerHTML = '<div class="thumbnail"><a href="'+permalink+'"><img src="'+img+'" alt="'+title+'" width="230" height="175"></a></div><div class="text"><h2><a href="'+permalink+'">'+subtitle+'</a></h2><p>'+post_excerpt+'</p><div class="author"><img class="avatar" src="'+avatar+'" alt="'+author+'" width="50" height="50"><strong>camelway</strong><span class="pubdate">'+post_date+'</span></div><div class="comment_count">'+feedback_number+' comments</div></div>';
+                                entry.innerHTML = '<div class="thumbnail"><a href="'+permalink+'"><img src="'+img+'" alt="'+title+'" width="230" height="175"></a></div><div class="text"><h2><a href="'+permalink+'">'+subtitle+'</a></h2><p>'+post_excerpt+'</p><div class="author"><img class="avatar" src="'+avatar+'" alt="'+author+'" width="50" height="50"><strong>camelway</strong><span class="pubdate">'+post_date+'</span></div><div class="comment_count">'+feedback_number+'</div></div>';
                             }else{
-                                entry.innerHTML = '<div class="text"><h2><a href="'+permalink+'">'+subtitle+'</a></h2><p>'+post_excerpt+'</p><div class="author"><img class="avatar" src="'+avatar+'" alt="'+author+'" width="50" height="50"><strong>camelway</strong><span class="pubdate">'+post_date+'</span></div><div class="comment_count">'+feedback_number+' comments</div></div>';
+                                entry.innerHTML = '<div class="text"><h2><a href="'+permalink+'">'+subtitle+'</a></h2><p>'+post_excerpt+'</p><div class="author"><img class="avatar" src="'+avatar+'" alt="'+author+'" width="50" height="50"><strong>camelway</strong><span class="pubdate">'+post_date+'</span></div><div class="comment_count">'+feedback_number+'</div></div>';
                             }
                             loadmore.previousElementSibling.appendChild(entry);
                         }
@@ -736,11 +759,50 @@ load_style();
 <?php }?>
         var floatrfq = window.document.createElement('div');
         floatrfq.className = 'float-widget';
-        floatrfq.innerHTML = '<div class="title"><p>Request free Quote</p><span class="close">&#xe90e;</span></div><form action="<?php dminfo('feedback_url')?>" method="post" class="feedback-form" onsubmit="return async_submit(this)"><p class="input full-row"><input type="text" name="user_name" required placeholder="Name:"></p><p class="input full-row"><input type="text" name="user_mobile" required placeholder="Mobile:"></p><p class="input full-row"><input type="email" name="user_email" placeholder="Email:"></p><p class="input full-row"><textarea name="content" placeholder="Detail:*" rows="2"></textarea></p><p class="full-row"><span class="result"></span><input name="submit" type="submit" value="Submit"></p></form>';
+        floatrfq.innerHTML = '<div class="title"><p>Request free Quote</p><span class="close">&#xe90e;</span></div><form action="<?php dminfo('feedback_url')?>" method="post" class="feedback-form" onsubmit="return async_submit(this)"><p class="input full-row"><input type="text" name="user_name" required placeholder="Name:*"></p><p class="input full-row"><input type="text" name="user_mobile" placeholder="Mobile:"></p><p class="input full-row"><input type="email" name="user_email" placeholder="Email:"></p><p class="input full-row"><textarea name="content" placeholder="Detail:*" rows="2"></textarea></p><p class="full-row"><span class="result"></span><input name="submit" type="submit" value="Submit"></p></form>';
         window.document.body.appendChild(floatrfq);
         floatrfq.querySelector('.title').addEventListener('click', function(){
              floatrfq.classList.toggle('active');
         });
+        var floatcontact = window.document.createElement('div');
+        floatcontact.className = 'float-contact';
+        floatcontact.innerHTML = '<a href="https://wa.me/<?php echo get_option('float_whatsapp')?>" target="_blank" class="whatsappus" rel="nofollow noopener" role="button" tabindex="0" title="Whatsapp">&#xe931;</a><a href="mailto:info@camelwaygroup.com" class="emailus" role="button" tabindex="0" title="Email ">&#xe917;</a>';
+        window.document.body.appendChild(floatcontact);
+        floatcontact.addEventListener('click', function(e){
+            var target = e.target || window.event.srcElement;
+            var href = target.href;
+            if(target.className == 'whatsappus'){
+                href+='?text='+encodeURIComponent(get_landing_page());
+                var aw = window.screen.availWidth;
+                var ah = window.screen.availHeight;
+                var width,height,top,left;
+                if(aw>1200){
+                    width = 800;
+                }else if(aw>800){
+                    width = 600;
+                }else{
+                    width = aw;
+                }
+                if(ah>800){
+                    height = 600;
+                }else{
+                    height = ah;
+                }
+               top = ah/2 - height/2;
+                left = aw/2 - width/2;
+                window.open(href, '_blank', 'width='+width+',height='+height+',left='+left+',top='+top+',location=no,menubar=no,resizable=no,scrollbars=no,status=no,titlebar=no,toolbar=no');
+                gtag('event', 'chat whatsapp', { 'event_category': 'chat','event_label':get_landing_page(),'value': 5});
+            }else{
+                var title = document.querySelector('h1') ? document.querySelector('h1').innerText : document.title;
+                var subject = encodeURIComponent('Request For Quote: '+title);
+                var body = encodeURIComponent(get_landing_page());
+                href+='?subject='+subject+"&body="+body;
+                window.location.href = href;
+                gtag('event', 'send email', { 'event_category': 'chat','event_label':get_landing_page(),'value': 5});
+            }
+             e.preventDefault();
+            return false;
+        }, false);
     })
 })(window);
 </script>
@@ -748,11 +810,11 @@ load_style();
 <body>
 <div class="wrap quick-links">
     <div class="container">
-        <a href="mailto:info@camelway.com" class="email">info@camelway.com</a>
-        <a href="tel:008618838109566" class="phone">008618838109566</a>
+        <a href="mailto:<?php echo get_option('site_email')?>" class="email"><?php echo get_option('site_email')?></a>
+        <a href="tel:<?php echo get_option('site_mobile')?>" class="phone"><?php echo get_option('site_mobile')?></a>
         <div class="media-platforms">
             <a href="https://www.facebook.com/camelway/" rel="nofollow" class="facebook" target="_blank">&#xe918;</a>
-            <a href="https://www.pinterest.com/camelway/" rel="nofollow" class="pinterest" target="_blank">&#xe91b;</a>
+            <a href="https://www.pinterest.com/camelwaygroup/" rel="nofollow" class="pinterest" target="_blank">&#xe91b;</a>
             <a href="https://www.youtube.com/channel/UCisCm9pYJtqHX9Vz6WOPPRg" rel="nofollow" class="youtube" target="_blank">&#xe91e;</a>
             <a href="https://www.linkedin.com/company/camelway/" rel="nofollow" class="linked" target="_blank">&#xe91c;</a>
         </div>
@@ -845,6 +907,7 @@ foreach($ps as $p) echo sprintf('<li><a href="%s">%s</a></li>', $p->get_permalin
             </ul>
         </li>
         <li><a href="<?php the_category_link(6);?>"><?php the_category_name(6)?></a></li>
+        <li><a href="<?php the_category_link(7);?>"><?php the_category_name(7)?></a></li>
         <li><a href="<?php the_permalink(1);?>">About Us</a></li>
         <li><a href="<?php the_permalink(2);?>">Contact Us</a></li>
     </ul>

@@ -13,14 +13,12 @@
         <h2>Camelway Concrete Mixing Plant Advantages</h2>
         <div class="advatanges">
             <ul>
-                <li>Accurate measurement and high compliance rate.</li>
-                <li>Fast production efficiency and convenient maintenance.</li>
-                <li>Intelligent sensor device, explosion-proof warehouse.</li>
-                <li>Low operating cost, in line with environmental protection standards.</li>
+                <li>Different batching plant types available, suitable for various applications.</li>
+                <li>Component structure, quick installation and convenient maintenance.</li>
+                <li>World-class design schemes and materials, durable and energy saving.</li>
+                <li>All plants have a 2-year warranty.</li>
             </ul>
         </div>
-        <h2>Concrete Batching Plant Configuration</h2>
-        <img src="<?php dminfo('template_url')?>media/batching-plant-configure.jpg" alt="Concrete Batching Plant Configuration">
         <ul class="catalog">
             <li>
                 <div class="text">
@@ -40,8 +38,8 @@
 while(have_posts()){
     the_post();
 ?>
-            <li>
-                <div class="thumbnail"><a href="<?php the_permalink()?>"><img src="<?php dminfo('ajax_url')?>?action=cropimage&f=<?php the_thumbnail()?>&width=350" alt="<?php the_subtitle();?>" width="350" height="262"></a></div>
+            <li id="item-<?php the_ID();?>">
+                <div class="thumbnail"><a href="<?php the_permalink()?>"><img srcset="<?php dminfo('ajax_url')?>?action=cropimage&f=<?php the_thumbnail()?>&width=350 350w, <?php the_thumbnail()?> 500w" src="<?php the_thumbnail()?>" alt="<?php the_subtitle();?>" width="500" height="375"></a></div>
                 <div class="description">
                     <h3><a href="<?php the_permalink()?>"><?php the_subtitle();?></a></h3>
                     <ul class="params">
@@ -59,6 +57,7 @@ while(have_posts()){
     <div class="sidebar">
         <?php get_template_part('sidebar', 'catalog');?> 
         <?php get_template_part('sidebar', 'rfq');?> 
+        <?php get_template_part('sidebar', 'articles');?> 
     </div>
     <div class="clearfix"></div>
 </div>

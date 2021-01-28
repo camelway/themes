@@ -1,0 +1,72 @@
+.primary-banner a {
+    display: block;
+    width: 800px;
+    background-size: cover;
+    background-position: center center;
+}
+.index-catalog {
+    margin-top: 10px;
+}
+.index-catalog h2 {
+    line-height: 50px;
+}
+.index-gallery ul {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    margin-top: 10px;
+    overflow: auto;
+}
+.index-gallery li {
+    min-width: 250px;
+    margin-right: 10px;
+}
+.index-posts {
+    margin-top: 10px;
+}
+.index-posts .items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.index-posts li {
+    width: 100%;
+    margin-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    line-height: 1.2em;
+    color: #a3a8ae;
+}
+.index-posts .thumbnail {
+    float: left;
+    width: 155px;
+    margin-right: 20px;
+    margin-bottom: 10px;
+}
+.index-posts a {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    color: #333;
+}
+.index-posts a:hover, .index-gallery a:hover {
+    color: #3778e4;
+}
+.index-posts .pubinfo {
+    margin: 5px 0;
+    font-size: 12px;
+}
+
+@media(max-width:500px){
+     .index-posts .thumbnail {
+        width: 120px;
+        margin-right: 1%;
+    }
+    .index-posts .text p, .index-posts .text .pubinfo {
+        display: none;
+    }
+    .index-posts a {
+        display: block;
+    }
+}

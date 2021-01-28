@@ -39,7 +39,7 @@
             <li>Production equipment: 500 sets</li>
             <li>Global customers: 15000+</li>
         </ul>
-        <a href="#" class="more">Learn More</a>
+        <a href="<?php the_permalink(1);?>" class="more">Learn More</a>
     </div>
     <div class="globalfootprint">
     <img src="<?php dminfo('template_url')?>media/clients.jpg" alt="our clients">
@@ -60,11 +60,15 @@
                 </li>
                 <li>
                     <h3><a href="<?php the_category_link(3)?>"><?php the_category_name(3)?></a></h3>
-                    <a href="<?php the_category_link(2)?>" class="more">More+</a>
+                    <a href="<?php the_category_link(3)?>" class="more">More+</a>
                 </li>
                 <li>
                     <h3><a href="<?php the_category_link(4)?>"><?php the_category_name(4)?></a></h3>
-                    <a href="<?php the_category_link(2)?>" class="more">More+</a>
+                    <a href="<?php the_category_link(4)?>" class="more">More+</a>
+                </li>
+                <li>
+                    <h3><a href="<?php the_category_link(6)?>"><?php the_category_name(6)?></a></h3>
+                    <a href="<?php the_category_link(6)?>" class="more">More+</a>
                 </li>
             </ul>
         </div>
@@ -101,45 +105,65 @@ while($q->have_posts()){
         <h2>User Evaluation <span class="privacy-notice">All public reviews has obtained user consent</span></h2>
         <ul>
             <li>
-                <p>I first learned about the company on the Internet. After contacting, I quickly gave a site planning plan. Later, after using the equipment, the performance was very good.</p>
+                <p>CAMELWAY GROUP also dispatched technicians and operators to the site to guide the installation, commissioning and operation of the concrete batching plant.</p>
                 <div class="author">
-                    <img src="<?php dminfo('template_url')?>media/review-author-avatar.png" alt="Peter Grosskopf">
+                    <img src="https://www.camelwaygroup.com/dm-content/uploads/pauls.webp" alt="Pauls">
                     <div class="org">
-                        <i>Peter Grosskopf</i>
-                        <em>Russia Project leader</em>
+                        <i>Pauls </i>
+                        <em>Australia Project leader</em>
                     </div>
                 </div>
             </li>
 
              <li>
-                <p>I first learned about the company on the Internet. After contacting, I quickly gave a site planning plan. Later, after using the equipment, the performance was very good.</p>
+                <p>Good after-sales service! Help me complete the acceptance of the equipment, and draft the construction plan and detailed process.</p>
                 <div class="author">
-                    <img src="<?php dminfo('template_url')?>media/review-author-avatar.png" alt="Peter Grosskopf">
+                    <img src="https://www.camelwaygroup.com/dm-content/uploads/felix.webp" alt="Felix">
                     <div class="org">
-                        <i>Peter Grosskopf</i>
-                        <em>Russia Project leader</em>
+                        <i>Felix </i>
+                        <em>Indonesia Project leader</em>
                     </div>
                 </div>
             </li>
 
              <li>
-                <p>I first learned about the company on the Internet. After contacting, I quickly gave a site planning plan. Later, after using the equipment, the performance was very good.</p>
+                <p> We went to the CAMELWAY factory and bought five self-loading concrete mixers, which are very popular locally. CAMELWAY factory is large and modern!</p>
                 <div class="author">
-                    <img src="<?php dminfo('template_url')?>media/review-author-avatar.png" alt="Peter Grosskopf">
+                    <img src="https://www.camelwaygroup.com/dm-content/uploads/chen-1.webp" alt="chen">
                     <div class="org">
-                        <i>Peter Grosskopf</i>
-                        <em>Russia Project leader</em>
+                        <i>Niclas </i>
+                        <em>Philippines Project leader</em>
                     </div>
                 </div>
             </li>
 
             <li>
-                <p>I first learned about the company on the Internet. After contacting, I quickly gave a site planning plan. Later, after using the equipment, the performance was very good.</p>
+                <p>This HZS25 mini concrete batching plant is very suitable for our project. Because our project is small. can totally meet the requirement of our local areas.</p>
                 <div class="author">
-                    <img src="<?php dminfo('template_url')?>media/review-author-avatar.png" alt="Peter Grosskopf">
+                    <img src="https://www.camelwaygroup.com/dm-content/uploads/chen.webp" alt="Trần Đức Lương ">
                     <div class="org">
-                        <i>Peter Grosskopf</i>
-                        <em>Russia Project leader</em>
+                        <i>Trần Đức Lương </i>
+                        <em>Vietnam Project leader</em>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <p>Our block machine has been installed successfully.Camelway engineer is very patient and professional. If you also want to purchase brick machine, CAMELWAY GROUP will be your best choice.</p>
+                <div class="author">
+                    <img src="https://www.camelwaygroup.com/dm-content/uploads/niclas.webp" alt="Ben Dheeraj ">
+                    <div class="org">
+                        <i>Ben Dheeraj </i>
+                        <em>India Project leader</em>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <p>We look for a proper concrete batching plant for a long time,  Thanks for CAMELWAY GROUP, gave us detailed introduction about their plants. So that we chose CAMELWAY. Now our concrete plant has began to work</p>
+                <div class="author">
+                    <img src="https://www.camelwaygroup.com/dm-content/uploads/jannick.webp" alt="David">
+                    <div class="org">
+                        <i>David </i>
+                        <em>Pakistan Project leader</em>
                     </div>
                 </div>
             </li>
@@ -148,27 +172,7 @@ while($q->have_posts()){
                 <div class="author">
                     <img src="<?php dminfo('template_url')?>media/review-author-avatar.png" alt="Peter Grosskopf">
                     <div class="org">
-                        <i>Peter Grosskopf</i>
-                        <em>Russia Project leader</em>
-                    </div>
-                </div>
-            </li>
-            <li>
-                <p>I first learned about the company on the Internet. After contacting, I quickly gave a site planning plan. Later, after using the equipment, the performance was very good.</p>
-                <div class="author">
-                    <img src="<?php dminfo('template_url')?>media/review-author-avatar.png" alt="Peter Grosskopf">
-                    <div class="org">
-                        <i>Peter Grosskopf</i>
-                        <em>Russia Project leader</em>
-                    </div>
-                </div>
-            </li>
-            <li>
-                <p>I first learned about the company on the Internet. After contacting, I quickly gave a site planning plan. Later, after using the equipment, the performance was very good.</p>
-                <div class="author">
-                    <img src="<?php dminfo('template_url')?>media/review-author-avatar.png" alt="Peter Grosskopf">
-                    <div class="org">
-                        <i>Peter Grosskopf</i>
+                        <i>Jannick </i>
                         <em>Russia Project leader</em>
                     </div>
                 </div>
@@ -200,7 +204,7 @@ while($q->have_posts()){
 $feedback_query = new DM_Feedback_Query();
 $comments = $feedback_query->query(array('number'=>6, 'group'=>'comment', 'status'=>'approved'));
 foreach($comments as $comment){
-    $showusername = (strlen($comment->feedback_user_name) > 3) ? substr($comment->feedback_user_name, 0, 3).'***' : $comment->feedback_user_name;
+    $showusername = (mb_strlen($comment->feedback_user_name) > 3) ? mb_substr($comment->feedback_user_name, 0, 3).'***' : $comment->feedback_user_name;
 ?>
             <li>
                 <div><span class="author"><?php echo $showusername?></span> <span class="pubdate"><?php echo $comment->feedback_date;?></span></div>

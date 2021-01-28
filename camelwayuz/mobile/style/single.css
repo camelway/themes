@@ -1,0 +1,402 @@
+/**评分功能**/
+.rate {
+    margin-top: 10px;
+    color: #a9aeb3;
+    overflow: hidden;
+}
+.rate .stars {
+    float: left;
+    display: block;
+    direction: rtl;
+    text-align: left;
+}
+.rate .stars input {
+    display: none; 
+}
+.rate .stars label {
+    display: inline-block;
+    margin-right: 3px;
+    font-size: 20px;
+    font-family: icon;
+    cursor: pointer;
+}
+.rate .stars label:hover ~ label, .rate .stars label:hover{
+    color: #ffbd22;
+}
+.rate .tips {
+    float: left;
+    padding: 0 10px;
+    margin-left: 20px;
+    font-size: 16px;
+    color: #2ac2b5;
+    background: #e2f3f4;
+}
+/**分享功能**/
+.share {
+    width: 100%;
+    font-family: icon;
+    text-align: right;
+}
+.share amp-social-share {
+    margin-left: 3px;
+    border-radius: 50%;
+}
+/**产品顶部**/
+.overview {
+    position: relative;
+    z-index: 0;
+    padding: 20px 0 10px 0;
+    background: #f7f9fb;
+    overflow: hidden;
+}
+.overview:before, .overview:after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left:0;
+    display: block;
+    width: 340px;
+    height: 340px;
+    background: url('{{template_url}}images/overview-bg.png') no-repeat center center;
+}
+.overview:after {
+    top: auto;
+    left: auto;
+    bottom: 0;
+    right: 0;
+    transform: rotate(180deg);
+}
+.overview .thumbnail {
+    width: fit-content;
+    margin: 0 auto;
+    position: relative;
+}
+.overview .score {
+    position: absolute;
+    top: 20px;
+    right: 0;
+    display: block;
+    padding: 0 28px 0 10px;
+    line-height: 28px;
+    color: #fff;
+    background: rgba(25,55,111,.8);
+}
+.overview .score em {
+    margin-right: 5px;
+    font-size: 16px;
+    color: #ffd200;
+}
+.overview .score:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -20px;
+    display: block;
+    border: 14px solid  rgba(25,55,111,.8);
+    border-top-color: transparent;
+    border-left: 10px solid transparent;
+    border-right: 10px solid rgba(25,55,111,.8);
+}
+.overview .brief {
+    width: 100%;
+    color: #666;
+}
+.overview .brief>p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    overflow: hidden;
+}
+.overview .prompt {
+    display: block;
+}
+.overview .contact {
+    margin-top: 24px;
+    white-space: nowrap;
+}
+.overview .contact a {
+    display: inline-block;
+    height: 30px;
+    margin-right: 12px;
+    padding: 0 20px;
+    line-height: 30px;
+}
+.overview .contact a:nth-last-child(1) {
+    margin-right: 0;
+}
+.overview .contact a:before {
+    margin-right: 3px;
+    vertical-align: middle;
+}
+.overview .contact .call {
+    color: #4ed3f3;
+    background: #14376f;
+}
+.overview .contact .call:before {
+    content: '\e918';
+}
+.overview .contact .mail {
+    border: 1px solid #4ed3f3;
+    color: #4ed3f3;
+    background: #e6f5fa;
+}
+.overview .contact .mail:before {
+    content: '\e901';
+    font-size: 15px;
+}
+.overview .contact .quote {
+    color: #3778e4;
+    background: #e3ecf9;
+}
+.overview .contact .quote:before {
+    content: '\e91a';
+    font-size: 15px;
+}
+.overview .contact-info {
+    margin-top: 15px;
+}
+.overview .contact-info .mobile:before {
+    content: '\e918';
+    color: #a9aeb3;
+    margin-right: 3px;
+} 
+.overview .contact-info .email:before {
+    content: '\e901';
+    color: #a9aeb3;
+    margin-right: 3px;
+}
+/**产品导航**/
+.product-navs {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    height: 40px;
+    padding-bottom: 10px;
+    font-size: 16px;
+    line-height: 40;
+    border-bottom: 1px solid #ddd;
+    color: #333;
+}
+.product-navs li:nth-child(n+2) {
+    margin-left: 20px; 
+}
+.product-navs {
+    position: sticky;
+    top: 40px;
+    z-index: 10;
+    padding-bottom: 5px;
+    font-size: 14px;
+    height: 30px;
+    line-height: 30px;
+    background: #fff;
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+.product-navs::-webkit-scrollbar {
+    display:none
+}
+.product-navs li {
+    padding: 0 2px;
+    display: inline-block;
+}
+.product-navs li:hover {
+    color: #4ed3f3;
+}
+.entry-content#specification {
+    display: none;
+}
+.entry-content#specification:target {
+    display: block;
+}
+
+/**博客和图库**/
+.main .head {
+    margin-top: 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 12px;
+    line-height: 30px;
+    color: #aaafb4;
+    overflow: hidden;
+}
+.main .head .pubinfo {
+    float: left;
+    color: #a3a8ae;
+}
+.pubinfo .viewed:before {
+    margin-left: 10px;
+}
+.main .head .score {
+    position: relative;
+    float: right;
+    padding: 0 20px 0 10px;
+    height: 26px;
+    line-height: 26px;
+    color: #fff;
+    background: #14376f;
+}
+.main .head .score em {
+    margin-right: 5px;
+    font-size: 16px;
+    color: #ffd200;
+}
+.main .head .score:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -23px;
+    display: block;
+    border: 13px solid #14376f;
+    border-top-color: transparent;
+    border-left: 10px solid transparent;
+}
+.gallery-slider {
+    position: relative;
+    z-index: 0;
+    margin-top: 30px;
+    text-align: center;
+}
+.post-tags a {
+    display: inline-block;
+    padding: 2px 10px;
+    margin: 4px 2px;
+    color: #3778e4;
+    background: #f2f4fd;
+}
+.rate-share {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 10px;
+    align-items: flex-end;
+}
+.rate-share .share {
+    width: auto;
+}
+.post-pagination {
+    margin-top: 15px;
+    line-height: 22px;
+    overflow: hidden;
+}
+.post-pagination span {
+    display: block;
+    color: #666;
+}
+.post-pagination a {
+    color: #aaafb4;
+}
+.post-pagination a:hover {
+    color: #4a82e6;
+    text-decoration: underline;
+}
+.post-author {
+    padding: 15px 10px 20px 20px;
+    border-top: 8px solid #14376f;
+    background: #f2f4fd;
+    overflow: hidden;
+}
+.post-author img {
+    border-radius: 50%;
+}
+.post-author .brief {
+    width: 100%;
+    white-space: nowrap;
+    overflow: auto;
+}
+.post-author .brief div {
+    display: inline-block;
+    vertical-align: top;
+}
+.post-author .author-info {
+    white-space: nowrap;
+}
+.post-author .author-avatar {
+    width: 65px;
+    display: block;
+    margin-right: 10px;
+}
+.post-author strong {
+    display: block;
+    margin-top: 10px;
+    font-size: 22px;
+}
+.post-author span {
+    display: block;
+    margin-top: 3px;
+    padding-top: 3px;
+    border-top: 1px solid #aaafb4;
+    color: #aaafb4; 
+}
+.post-author .contact {
+    padding: 0 10px;
+    margin-top: 18px;
+    margin-left: 15px;
+    font-size: 16px;
+    line-height: 36px;
+    color: #4ed3f3;
+    background: #fff;
+    border-radius: 3px;
+    box-shadow: 0 0 5px rgba(31,76,150,.2);
+}
+.post-author .telphone:before {
+    content: "\e918";
+    margin-right: 2px;
+}
+.post-author .email:before {
+    content: "\e901";
+    margin-right: 2px;
+}
+.post-author .motto {
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px 20px;
+    border-radius: 3px;
+    line-height: 1.2em;
+    color: #aaafb4;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(31,76,150,.2);
+    clear: left;
+}
+.post-author .motto:before {
+    position: absolute;
+    top: -24px;
+    left: 20px;
+    content: '';
+    display: block;
+    border-width: 12px;
+    border-style: solid; 
+    border-color: transparent transparent #fff transparent;
+}
+.related-machines .items li {
+    display: inline-block;
+    width: 33%;
+    margin-right: 0.5%;
+    margin-top: 10px;
+    text-align: center;
+    vertical-align: top;
+}
+.related-machines h3 {
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 1.1em;
+}
+.related-machines .items li:nth-child(3n){
+    margin-right: 0;
+}
+@media(max-width:450px){
+    .related-machines .items li {
+        width: 49%;
+        margin-right: 2%;
+    }
+    .related-machines .items li:nth-child(2n) {
+        margin-right: 0;
+    }
+    .rate-share .share {
+        width: 100%;
+        margin-top: 10px;
+        text-align: center;
+    }
+}

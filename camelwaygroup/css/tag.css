@@ -2,9 +2,15 @@
     margin: 40px auto;
 }
 .tag .description {
+    margin-top: 10px;
     padding-bottom: 20px;
     border-bottom: 1px solid #ddd;
+    line-height: 1.5em;
     color: #999;
+    white-space: pre-line;
+}
+.tag .description a {
+    color: #549ccf;
 }
 .tag .results {
     margin-top: 40px;
@@ -19,6 +25,7 @@
 .tag .item {
     width: 100%;
     margin-top: 30px;
+    overflow: hidden;
 }
 .tag .results .thumbnails {
     display: flex;
@@ -52,12 +59,15 @@
 .tag .results a:hover {
     text-decoration: underline;
 }
-@media(max-width:400px){
+@media(max-width:500px){
     .tag .results .item p {
         display: none;
     }
     .tag .results .thumbnail {
         width: 100px;
+    }
+    .tag h1 {
+        font-size: 30px;
     }
     .tag .results h2 {
         font-size: 18px;

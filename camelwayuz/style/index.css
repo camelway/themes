@@ -1,0 +1,78 @@
+.primary-banner {
+    width: 100%;
+    height: 405px;
+    overflow: hidden;
+}
+.primary-banner a {
+    display: block;
+    height: 405px;
+    background-size: cover;
+    background-position: center center;
+}
+h2 {
+    line-height: 60px;
+}
+.index-catalog {
+   margin-top: 10px; 
+}
+.index-gallery ul {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    overflow: auto;
+}
+.index-gallery li {
+    min-width: 250px;
+    margin-right: 10px;
+}
+.index-posts {
+    margin-top: 10px;
+}
+.index-posts .items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.index-posts li {
+    width: 49%;
+    margin-top: 10px;
+    border-bottom: 1px solid #eee;
+    line-height: 1.2em;
+    color: #a3a8ae;
+}
+.index-posts .thumbnail {
+    float: left;
+    width: 155px;
+    margin-right: 20px;
+    margin-bottom: 10px;
+}
+.index-posts a {
+    color: #333;
+}
+.index-posts a:hover, .index-gallery a:hover {
+    color: #3778e4;
+}
+.index-posts .pubinfo {
+    margin: 10px 0;
+}
+
+@media(max-width:800px){
+    .primary-banner {
+        height: 300px;
+    }
+    .product-items li {
+        width: 49%;
+    }
+    .index-posts li {
+        width: 100%;
+    }
+}
+
+@media(max-width:600px){
+    .primary-banner {
+        height: 250px;
+    }
+    .product-items li {
+        width: 100%;
+    }
+}

@@ -37,10 +37,10 @@ function the_twitter_card($twitter = 'camelway'){
 <meta name="twitter:site" content="@%s">
 <meta name="twitter:title" content="%s">
 <meta name="twitter:description" content="%s">', $twitter, dm_title('-', false), dm_description(255, false));
-    $images = get_this_images();
-if(!empty($images))
+    $image = get_primaryimage();
+if(!empty($image))
     $card .= sprintf('
-<meta name="twitter:image" content="%s">', $images[0]['url']);
+<meta name="twitter:image" content="%s">', $image);
     echo $card."\r\n";
 }
 
@@ -67,7 +67,7 @@ function the_facebook_ogp($lang = 'en', $sitename = 'Camelway Group', $facebooku
 <meta property="og:type" content="article">
 <meta property="article:published_time" content="%s">
 <meta property="article:modified_time" content="%s">
-<meta property="article:author" content="%s">
+<!--<meta property="article:author" content="%s">-->
 <meta property="article:publisher" content="%s">', dm_url(0), get_the_title(), esc_html(dm_trim_words(get_the_excerpt(), 255)),  get_the_time('Y-m-d H:i:s'), get_the_modified_time('Y-m-d H:i:s'), get_the_author_meta('facebook'), $facebookurl);
 
         $tags = get_the_tags();
@@ -77,7 +77,6 @@ function the_facebook_ogp($lang = 'en', $sitename = 'Camelway Group', $facebooku
 <meta property="article:tag" content="%s">', $tag->name);
             }
         }
-   
     }
     elseif(is_category() || is_tag() || is_search()){
         $ogp .= sprintf('
@@ -87,13 +86,11 @@ function the_facebook_ogp($lang = 'en', $sitename = 'Camelway Group', $facebooku
 <meta property="og:type" content="object">', dm_url(0),  dm_title(' - ', false), dm_description(255, 0));
     }
 
-    $images = get_this_images();
-    foreach($images as $img){
+    list($img, $w, $h) = get_primaryimage(get_post(), true);
         $ogp .= sprintf('
 <meta property="og:image" content="%s">
 <meta property="og:image:width" content="%d">
-<meta property="og:image:height" content="%d">', $img['url'], $img['width'], $img['height']);
-    }
+<meta property="og:image:height" content="%d">', $img, $w, $h);
     echo $ogp."\r\n";
 }
 
@@ -111,8 +108,9 @@ function the_google_schema($websitename = 'Camelway Group', $orgname = 'Camelway
         }
         $tmp = array_reverse($tmp);
         $items = array();
+        $items[] = array('@type'=>'ListItem', 'position'=>1, 'item'=>array('@id'=>home_url(1), 'name'=>'Home'));
         foreach($tmp as $key=>$item){
-            $position = $key + 1;
+            $position = $key + 2;
             $items[] = array('@type'=>'ListItem', 'position'=>$position, 'item'=>array('@id'=>$item['@id'], 'name'=>$item['name']));
         
         }
@@ -158,12 +156,46 @@ function the_google_schema($websitename = 'Camelway Group', $orgname = 'Camelway
         'breadcrumb'=>$breadcrumb
     );
 
+    if(is_category(array(1,2,3,4,5,6,7,8,9))){
+        $catlink = get_category_link();
+        $products = array();
+        $i = 1;
+        while(have_posts()){
+            the_post();
+            $ratingdata = get_rating();
+            $products[] = array(
+                '@type'=>'ListItem',
+                'position'=>$i,
+                'item'=>array(
+                    '@type'=>'Product',
+                    'image'=>get_the_thumbnail(),
+                    'name'=>get_the_subtitle(),
+                    'url'=>$catlink.'#item-'.get_the_ID(),
+                    'aggregateRating'=>array(
+                        '@type'=>'AggregateRating',
+                        'ratingValue'=>$ratingdata['score'],
+                        'reviewCount'=>$ratingdata['count'],
+                      )
+                ),
+            );
+            $i++;
+        }
+        if(!empty($products)){
+            $schema[] = array(
+                '@type'=>'ItemList',
+                'numberOfItems'=>found_posts(),
+                'itemListElement'=> $products,
+            );
+        }
+    }
+
     if(is_single() && in_category(array(1,2,3,4,5,6,7,8,9))){
         $ratingdata = get_rating();
         $feedback_query = new DM_Feedback_Query();
-        $comments = $feedback_query->query(array('post_id'=>get_the_ID(), 'number'=>20, 'group'=>'comment', 'no_found_rows'=>true, 'status'=>'approved'));
+        $comments = $feedback_query->query(array('post_id'=>get_the_ID(), 'number'=>20, 'group'=>'comment', 'no_found_rows'=>true, 'status'=>'approved', 'parent'=>0));
         $reviews = array();
         foreach($comments as $comment){
+            $feedback_content = preg_replace('/[\r\n]+/iu', ' ', strip_tags($comment->feedback_content));
             $reviews[] = array(
                 '@type'=>'review',
                 'author'=>array(
@@ -171,7 +203,7 @@ function the_google_schema($websitename = 'Camelway Group', $orgname = 'Camelway
                     'name'=>$comment->feedback_user_name,
                 ),
                 'datePublished'=>$comment->feedback_date,
-                'reviewBody'=>strip_tags($comment->feedback_content),
+                'reviewBody'=>esc_html($feedback_content),
                 'reviewRating'=>array(
                     '@type'=>'Rating',
                     'ratingValue'=>$comment->get_meta('score', true),
@@ -183,7 +215,7 @@ function the_google_schema($websitename = 'Camelway Group', $orgname = 'Camelway
         $schema[] = array(
             '@type'=>'Product',
             'name'=>get_the_subtitle(),
-            'image'=>array_map(function($item){return $item->url;}, get_post_images('gallery')),
+            'image'=>get_images(),
             'description'=>get_the_excerpt(),
             'sku'=>md5(get_the_title()),
             'mpn'=>sprintf('%u', crc32(get_the_subtitle())),
@@ -210,18 +242,22 @@ function the_google_schema($websitename = 'Camelway Group', $orgname = 'Camelway
         );
     }
     elseif(is_single() && in_category(10)){
+        $post = get_the_ID();
+        $feedback_query = new DM_Feedback_Query();
+        $comments = $feedback_query->query(array('post_id'=>$post, 'number'=>15, 'group'=>'comment', 'no_found_rows'=>false, 'status'=>'approved'));
         $schema[] = array(
             '@type'=>'BlogPosting',
             'headline'=>get_the_title(),
             'alternativeHeadline'=>get_the_subtitle(),
             'datePublished'=>get_the_time('c'),
             'dateModified'=>get_the_modified_time('c'),
-            'image'=>array_map(function($item){return $item['url'];}, get_post_all_images()),
+            'image'=>get_images(),
             'keywords'=>array_map(function($tag){return $tag->name;}, get_the_tags()),
             'mainEntityOfPage'=>get_the_permalink().'#main',
             'description'=>dm_description(255, false),
             'author'=>get_the_author(),
-            'publisher'=>$schema[0]
+            'publisher'=>$schema[0],
+            'commentCount'=>$feedback_query->found_feedbacks()
         );
     }
     echo '<script type="application/ld+json">{"@context":"https://schema.org","@graph":['.trim(_arr2jsonld($schema), ',').']}</script>';
@@ -256,78 +292,59 @@ function _arr2jsonld($arraydata){
     return rtrim($jsonld, ',');
 }
 
-
-//获取页面主图
-function get_primaryimage(){
-    $img = get_the_thumbnail();
+//获取页面主图:
+function get_primaryimage($post = NULL, $withsize = false){
     if(is_category())
         $img = get_category_thumbnail();
-    return $img;
-}
-
-//获取当前页面所有图片: 格式array({url:'xxx', width:1200, height: 600},...)
-function get_this_images(){
-    $thumbnailwidth = get_option('thumbnail_size_w');
-    $thumbnailheight = get_option('thumbnail_size_h');
-    $images = array();
-    if((is_single() || is_page() || is_topic())){
-        $images = get_post_all_images();
-    }elseif(is_category()){
-        if(get_category_thumbnail()) {
-            $img = get_category_thumbnail();
-            if(strpos($img, home_url(1) === 0))
-                $path = ABSPATH.str_replace(home_url(1), '', $img);
-            elseif(substr($img, 0, 1) == '/')
-                $path = ABSPATH.substr($img, strlen(dm_get_install_path()));
-            else
-                $path = $img;
-            list($width, $height, $type, $attr) = getimagesize($path);
-            $images[] = array('url'=>$img, 'width'=>$width, 'height'=>$height);
-        }
-    }elseif(is_tag() || is_search()){
-        if(have_posts()){
-            while(have_posts()){
-                the_post();
-                if(has_thumbnail())
-                    $images[] = array('url'=>get_the_thumbnail(), 'width'=>$thumbnailwidth, 'height'=>$thumbnailheight);
-            }
-        }
+    elseif(is_home() || is_tag() || is_search() || is_single() || is_page() || is_topic()){
+        $img = get_the_thumbnail();
     }
-    return $images;
+    if(empty($img)){
+        $images = get_images($post);
+        $img = $images[0];
+    }
+
+    if($withsize == false)
+        return $img;
+    else{
+        list($width, $height) = get_image_size($img);
+        return array($img, $width, $height);
+    }
 }
 
 //获取文章图片列表
-function get_post_all_images($post = NULL){
-    $thumbnailwidth = get_option('thumbnail_size_w');
-    $thumbnailheight = get_option('thumbnail_size_h');
+function get_images($post = NULL){
     $post = get_post($post);
     $images = array();
     //缩略图
     if(!empty($post->post_thumbnail)){
-        $images[] = array('url'=>$post->post_thumbnail, 'width'=>$thumbnailwidth, 'height'=>$thumbnailheight);
+        $images[] = $post->post_thumbnail;
     }
     //图库图
-    if($post->have_images('gallery')){
+    if(!empty($post) && $post->have_images('gallery')){
         while($post->have_images('gallery')){
             $post->the_image();
-            $images[] = array('url'=>$post->atlas->get_current_image_thumbnail(), 'width'=>$thumbnailwidth, 'height'=>$thumbnailheight);
+            $images[] = $post->atlas->get_current_image_link();
         }
     }
     //内容图
-    preg_match_all('/<img.*?src=["\']([^\'"]*)["\'].*?>/i', $post->get_post_content(), $matches);
-    if(!empty($matches[1])){
-        foreach($matches[1] as $img){
-            if(strpos($img, home_url(1) === 0))
-                $path = ABSPATH.str_replace(home_url(1), '', $img);
-            elseif(substr($img, 0, 1) == '/')
-                $path = ABSPATH.substr($img, strlen(dm_get_install_path()));
-            else
-                $path = $img;
-            list($width, $height, $type, $attr) = getimagesize($path);
-            $images[] = array('url'=>$img, 'width'=>$width, 'height'=>$height);
-        }
-    }
+    if(!empty($post))
+	preg_match_all('/<img.*?src=["\']([^\'"]*)["\'].*?>/i', $post->get_post_content(), $matches);
+    $images = array_merge($images, $matches[1]);
     return $images;
+}
+
+//获取图片尺寸， 返回宽度和高度
+function get_image_size($url){
+    $url = urldecode($url);
+    if(strpos($url, home_url(1)) === 0 )
+        $path = ABSPATH.str_replace(home_url(1), '', $url);
+    elseif(substr($url, 0, 1) == '/')
+        $path = ABSPATH.substr($url, strlen(dm_get_install_path()));
+    else
+        $path = $url;
+    list($width, $height, $type, $attr) = @getimagesize($path);
+    return array('0'=>$width, '1'=>$height, 'width'=>$width, 'height'=>$height);
 }
 
 //面包屑导航
@@ -345,6 +362,47 @@ function breadcrumb_nav(){
         $html .= sprintf('<a href="%s">%s</a>', get_the_permalink(), get_the_subtitle());
     }
     echo sprintf('<div class="breadcrumb"><a href="%s">Home</a> &gt; %s</div>', home_url(1), $html);
+}
+
+//显示时间间隔
+function get_interval_time($origin_time){
+    $origin = strtotime($origin_time);
+    $diff = time() - $origin;
+    if($diff < 3600){
+        $num = ceil($diff/60);
+        $s = $num > 1 ? 's' : '';
+        return sprintf('%d minute%s ago', $num, $s);
+    }
+    elseif($diff < 3600*24){
+        $num = ceil($diff/3600);
+        $s = $num > 1 ? 's' : '';
+        return sprintf('%d hour%s ago', $num, $s);
+    }
+    elseif($diff < 3600*24*30){
+        $num = ceil($diff/(3600*24));
+        $s = $num > 1 ? 's' : '';
+        return sprintf('%d day%s ago', $num, $s);
+    }
+    elseif($diff < 3600*24*70){
+        $num = round($diff/(3600*24*7));
+        $s = $num > 1 ? 's' : '';
+        return sprintf('%d week%s ago', $num, $s);
+    }
+    elseif($diff < 3600*24*365){
+        $num = round($diff/(3600*24*30));
+        $s = $num > 1 ? 's' : '';
+        return sprintf('%d month%s ago', $num, $s);
+    }else{
+        $num = round($diff/(3600*24*365));
+        $s = $num > 1 ? 's' : '';
+        return sprintf('%d year%s ago', $num, $s);
+    }
+}
+
+//根据数字显示可数名词的s
+function the_plural($int){
+    if(intval($int) > 1)
+        echo 's';
 }
 
 //搜索默认不搜产品
@@ -393,7 +451,7 @@ function load_posts(){
             $ps['items'][$key]['author'] = get_the_author($post);
             $ps['items'][$key]['author_avatar'] = get_the_author_meta('avatar', $post->post_author);
             if(!empty($tag))
-                $ps['items'][$key]['images'] = get_post_all_images($post);
+                $ps['items'][$key]['images'] = get_images($post);
             if(!empty($cat))
                 $ps['items'][$key]['feedback_number'] = get_feedback_number($post);
     }
@@ -425,6 +483,7 @@ function webp2jpg(){
     $originurl = substr($_REQUEST['f'], 0,  4) == 'http' ? $_REQUEST['f'] : home_url(1).substr($_REQUEST['f'], 1);
     header('Content-Type:image/jpeg');
     header('Cache-Control:public,max-age=8640000');
+    header('Last-Modified:'.gmdate('D, d M Y H:i:s T', filemtime($image)));
     header(sprintf('Link: <%s>; rel="canonical"', $originurl));
     $webp = imagecreatefromwebp($image);
     imagejpeg($webp);
@@ -464,6 +523,7 @@ function cropimage(){
 
     $originurl = substr($_REQUEST['f'], 0,  4) == 'http' ? $_REQUEST['f'] : home_url(1).substr($_REQUEST['f'], 1);
     header('Cache-Control:public,max-age=8640000');
+    header('Last-Modified:'.gmdate('D, d M Y H:i:s T', filemtime($image)));
     header(sprintf('Link: <%s>; rel="canonical"', $originurl));
     $dmimg->image($type);
 }
@@ -494,15 +554,9 @@ function amp_filter($content){
         $attrs = array_combine($ms[1], $ms[3]);
         if((empty($attrs['width']) || empty($attrs['height'])) && function_exists('getimagesize')){
             $imgsrc = urldecode($attrs['src']);
-            if(strpos($imgsrc, home_url(1) === 0))
-                    $imgsrc = ABSPATH.str_replace(home_url(1), '', $imgsrc);
-                elseif(substr($img, 0, 1) == '/')
-                    $imgsrc = ABSPATH.substr($imgsrc, strlen(dm_get_install_path()));
-                else
-                    $imgsrc = esc_url($imgsrc);
-            $imgsize = getimagesize($imgsrc);
-            $attrs['width'] = $imgsize[0];
-            $attrs['height'] = $imgsize[1];
+            list($w, $h) = get_image_size($imgsrc);
+            $attrs['width'] = $w;
+            $attrs['height'] = $h;
         }
         if(empty($attrs['alt'])){
             $attrs['alt'] = '';
@@ -588,7 +642,7 @@ function get_rating($id = 0){
     if(empty($id))
         $id = get_the_ID();
     $fquery = new DM_Feedback_Query();
-    $coms = $fquery->query(array('post_id'=>$id, 'group'=>'comment', 'feedback_parent'=>0, 'status'=>'approved', 'meta_key'=>'score', 'no_found_rows'=>false));
+    $coms = $fquery->query(array('post_id'=>$id, 'group'=>'comment', 'feedback_parent'=>0, 'status'=>'approved', 'meta_key'=>'score', 'no_found_rows'=>false, 'parent'=>0));
     $count = $fquery->found_feedbacks();
     $total = 0;
     foreach($coms as $com){
@@ -638,7 +692,7 @@ function load_comments(){
         $result['items'][$i]['author'] = strlen($comment->feedback_user_name) > 3 ? substr($comment->feedback_user_name, 0, 3).'***' : $comment->feedback_user_name;
         $result['items'][$i]['avatar'] = sprintf('https://www.gravatar.com/avatar/%s.jpg?d=mp', md5($comment->feedback_user_email));
         $result['items'][$i]['content'] = $comment->feedback_content;
-        $result['items'][$i]['date'] = $comment->feedback_date;
+        $result['items'][$i]['date'] = get_interval_time($comment->feedback_date);
         $result['items'][$i]['likes'] = intval(get_feedback_meta($comment, 'likes'));
         $result['items'][$i]['score'] = get_feedback_meta($comment, 'score') ? get_feedback_meta($comment, 'score') : NULL;
     }
@@ -711,6 +765,36 @@ function unlike_comment(){
     echo $likes;
 }
 
+function add_lead(){
+    $raw = file_get_contents('php://input');
+    $obj = json_decode($raw);
+    $name = '';
+    $email = '';
+    $phone = '';
+    $company = '';
+    $product = '';
+    $is_test = $obj->is_test;
+    $campaign_id = $obj->campaign_id;
+    foreach($obj->user_column_data as $data){
+             if($data->column_id == 'FULL_NAME')
+                $name .= $data->string_value.' ';
+            if($data->column_id == 'FIRST_NAME')
+                $name .= $data->string_value.' ';
+             if($data->column_id == 'LAST_NAME')
+                $name .= $data->string_value;
+             if($data->column_id == 'PHONE_NUMBER')
+                $phone .= $data->string_value;
+             if($data->column_id == 'COMPANY_NAME')
+                $company .= $data->string_value;
+             if($data->column_id == 'EMAIL')
+                $email .= $data->string_value;
+              if($data->column_id == 'PRODUCT')
+                $product .= $data->string_value;
+    }
+    $feedback = array('user_name'=>$name, 'user_email'=>$email, 'user_mobile'=>$phone, 'content'=>sprintf("Product: %s\nCompany: %s", $product, $company), 'user_referer'=>'Google Lead Webhook');
+    return dm_insert_feedback($feedback, false);
+}
+
 //更改sitemap缓存
 function modify_sitemap_header($headers){
     if(is_sitemap())
@@ -737,15 +821,81 @@ function add_title($title){
     return $title;
 }
 
+//array
+function _arr2nav($navs){
+    $html = '';
+    foreach($navs as $nav){
+        $title = $nav['title'];
+	$anchor = $nav['anchor'];
+        if(empty($nav['children']))
+            $html .= sprintf('<li><a href="#%s">%s</a></li>', $anchor, $title);
+	else
+            $html .= sprintf('<li><a href="#%s">%s</a>%s</li>', $anchor, $title, _arr2nav($nav['children']));
+    }
+    return sprintf('<ul>%s</ul>', $html);
+}
+
+//内容导航
+function single_content_filter($content){
+    $content = str_replace('<p><br/></p>', '', $content);
+    $navs = array();
+    $content = preg_replace_callback('/<h(\d)([^>]*)>(.*?)<\/h\1>/is', function($matches) use(&$navs){
+        $level = $matches[1];
+        $attributes = $matches[2];
+        $title = strip_tags($matches[3]);
+        $id = sanitize_name($title);
+        $index = $level - 2;
+        $last = empty($navs) ? false : end($navs);
+        $lastindex = empty($navs) ? 0 : count($navs) - 1;
+        if($last == false || $last['index'] == $index)
+            $navs[] = array('index'=>$index, 'anchor'=>$id, 'title'=>$title);
+        else
+            $navs[$lastindex]['children'][] = array('index'=>$index, 'anchor'=>$id, 'title'=>$title);
+        return sprintf('<h%d%s id="%s">%s</h%d>', $level, $attributes, $id, $matches[3], $level);
+    }, $content);
+    if(is_single() && in_category(10) && !empty($navs)){
+        $html = _arr2nav($navs);
+        if(!empty($html)){
+            $content = sprintf('<div class="content-navigation" role="navigation"><h2>Contents</h2>%s</div>%s', $html, $content);
+        }
+    }
+
+    $content = preg_replace_callback('/<img([^>]*)>/i', function($m){
+        preg_match_all('/([^=\s]*)=(["\'])(.*?)\2/i', $m[1], $ms);
+        $attrs = array_combine($ms[1], $ms[3]);
+        $srcset = '';
+        if(!empty($attrs['src']) && function_exists('getimagesize')){
+            $imgsize = get_image_size($attrs['src']);
+            $width = $imgsize[0];      
+            if(empty($attrs['srcset']) && $width > 400){
+                $srcset .= sprintf('%s?action=cropimage&f=%s&width=400 400w,', get_dminfo('ajax_url'), esc_url($attrs['src']));
+            }
+            if(empty($attrs['srcset']) && $width > 600){
+                $srcset .= sprintf('%s?action=cropimage&f=%s&width=600 600w,', get_dminfo('ajax_url'), esc_url($attrs['src']));
+            }
+            if(empty($attrs['srcset']) && $width > 800){
+               $srcset .= sprintf('%s?action=cropimage&f=%s&width=800 800w,', get_dminfo('ajax_url'), esc_url($attrs['src']));
+            }
+            if(empty($attrs['srcset']) && $width > 0){
+                $srcset .= sprintf('%s %dw', $attrs['src'], $width);
+            }
+        }
+        if(!empty($srcset))
+            return sprintf('<img srcset="%s"%s>', $srcset, $m[1]);
+        return $m[0];
+    }, $content);
+
+    return $content;
+}
+
 //压缩html
 function compress_html($content){
     //js
-    $content = preg_replace_callback('/(<script[^>]*>)(.*)<\/script>/is', function($matches){
+    $content = preg_replace_callback('/(<script[^>]*>)(.*?)<\/script>/is', function($matches){
         $code = preg_replace('/[\s\r\n\t]\/\/[^\r\n]*/i', ' ', $matches[2]);
         $code = preg_replace('/\/\*.*\*\//is', ' ', $code);
         $code = preg_replace('/[\r\n][\s\t]*/i', '', $code);
         $code = preg_replace('/[\s\t]*[\r\n]/i', '', $code);
-
         return $matches[1].$code.'</script>';
     }, $content);
     //html
@@ -753,11 +903,113 @@ function compress_html($content){
     $content = preg_replace('/(<[^>]*>)[\s\t\r\n]*(?=<[^>]*>)/i', '\1', $content);
     return $content;
 }
+function seo_robots(){
+    return "User-agent: SemrushBot
+User-agent: SemrushBot-SA
+User-agent: MJ12bot
+User-agent: AhrefsBot 
+User-agent: PetalBot
+User-agent: AspiegelBot
+User-agent: rogerbot
+User-agent: dotbot
+User-agent: MauiBot
+User-agent: ia_archiver
+User-agent: ZoominfoBot
+User-agent: SeznamBot
+User-agent: BLEXBot
+User-agent: HubSpot Crawler
+User-agent: SeznamBot
+User-agent: megaindex.com
+Disallow: /
+User-agent: *
+Disallow: /dm-include/";
+}
+
+//主题数据更新
+function modify_theme_data(){
+    if(!empty($_POST)){
+        add_option('site_lang', $_POST['sitelang']); 
+        add_option('site_mobile', $_POST['sitemobile']); 
+        add_option('site_email', $_POST['siteemail']); 
+        add_option('float_mobile', $_POST['floatmobile']); 
+        add_option('float_whatsapp', $_POST['floatwhatsapp']); 
+        add_option('float_telegram', $_POST['floattelegram']); 
+        add_option('float_email', $_POST['floatemail']); 
+        add_option('google_ga', $_POST['googlega']); 
+        add_option('facebook_pixel', $_POST['facebookpixel']); 
+        add_option('gloabaljs', $_POST['gloabaljs']); 
+        add_option('conversionjs', $_POST['conversionjs']); 
+        echo '<div class="dm-message dm-message-success">更新成功!</div>';
+    }
+    $html=<<<HTML
+<h1>主题数据</h1>
+<form method="post" action="">
+<table class="form-table">
+    <tr>
+        <th scope="row"><label for="sitemobile">网站电话号码</label></th>
+        <td>
+            <input type="text" id="sitemobile" name="sitemobile" value="%s" class="regular-text">
+            <p class="description">显示在网站上的电话号码。</p>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row"><label for="siteemail">网站邮箱地址</label></th>
+        <td>
+            <input type="text" id="siteemail" name="siteemail" value="%s" class="regular-text">
+            <p class="description">显示在网站上的邮箱地址。</p>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row"><label for="floatwhatsapp">浮动whatsapp</label></th>
+        <td>
+            <input type="text" id="floatwhatsapp" name="floatwhatsapp" value="%s" class="regular-text">
+            <p class="description">浮动显示whatsapp对话号码。</p>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row"><label for="googlega">Google统计全局ID</label></th>
+        <td>
+            <input type="text" id="googlega" name="googlega" value="%s" class="regular-text">
+            <p class="description">Google统计全局ID，用于AMP页面。</p>
+        </td>
+    </tr>
+     <tr>
+        <th scope="row"><label for="facebookpixel">Facebook像素ID</label></th>
+        <td>
+            <input type="text" id="facebookpixel" name="facebookpixel" value="%s" class="regular-text">
+            <p class="description">Facebook像素ID，用于AMP页面。</p>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row"><label for="gloabaljs">全局JS代码</label></th>
+        <td>
+            <textarea id="gloabaljs" name="gloabaljs" class="large-text" rows="20">%s</textarea>
+            <p class="description">全局JS代码，可以用来存放各种统计代码。</p>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row"><label for="conversionjs">转化代码</label></th>
+        <td>
+            <textarea id="conversionjs" name="conversionjs" class="large-text" rows="5">%s</textarea>
+            <p class="description">转化代码，进行转化统计。</p>
+        </td>
+    </tr>
+</table>
+    <p class="submit"><input type="submit" value="保存更改" class="button-primary"></p>
+</form>
+HTML;
+printf($html, get_option('site_mobile'), get_option('site_email'), get_option('float_whatsapp'), get_option('googlega'), get_option('facebookpixel'), esc_html(get_option('gloabaljs')), esc_html(get_option('conversionjs')));
+}
+
+//给后台增加主题数据管理页面
+function add_theme_menu(){
+    add_submenu_page('themes', '网站数据管理', '网站数据管理', array('edit_themes'), 'edit-data', 'modify_theme_data');
+}
+add_action('admin_menu', 'add_theme_menu');
 
 add_action('pre_get_posts', 'modify_search_query');
-add_filter('dm_headers', 'modify_sitemap_header');
 add_filter('dm_title', 'add_title');
-add_action('flush_feedback_result', 'feedback_amp_response');
+add_filter('dm_headers', 'modify_sitemap_header');
 add_action('ajax_webp2jpg', 'webp2jpg');
 add_action('ajax_cropimage', 'cropimage');
 add_action('ajax_viewed', 'record_viewed');
@@ -770,5 +1022,9 @@ add_action('ajax_likecomment', 'like_comment');
 add_action('ajax_unlikecomment', 'unlike_comment');
 add_action('ajax_loadcomments', 'load_comments');
 add_action('ajax_loadposts', 'load_posts');
+add_action('ajax_addlead', 'add_lead');
+add_action('flush_feedback_result', 'feedback_amp_response');
+add_filter('robots_txt', 'seo_robots');
 
+add_action('the_content', 'single_content_filter');
 add_action('dm_response', 'compress_html');

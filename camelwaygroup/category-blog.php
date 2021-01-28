@@ -1,7 +1,7 @@
 <?php get_header();?>
 <div class="container category-blog blog">
     <div class="breadcrumb">
-        Home &gt; <?php the_category();?>
+        <a href="<?php echo home_url()?>">Home</a> &gt; <?php the_category();?>
     </div>
     <div class="container">
         <h1><?php the_category_name();?></h1>
@@ -26,7 +26,7 @@ while(have_posts()){
                         <strong><?php the_author()?></strong>
                         <span class="pubdate"><?php the_time('M j, Y');?></span>
                     </div>
-                    <div class="comment_count"><?php the_feedback_number()?> comments</div>
+                    <div class="comment_count"><?php the_feedback_number()?> Comment<?php the_plural(get_feedback_number());?></div>
                 </div>
             </li>
 <?php } ?>

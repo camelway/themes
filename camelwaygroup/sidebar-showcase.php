@@ -11,7 +11,7 @@ while($q->have_posts()){
                 <a href="<?php the_permalink();?>"><img src="<?php dminfo('ajax_url')?>?action=cropimage&f=<?php the_thumbnail()?>&width=150" alt="<?php the_subtitle();?>" width="150" height="112"></a>
             </div>
             <div class="text">
-                <h4><a href="<?php the_permalink();?>"><?php the_subtitle();?></a></h4>
+                <h4><a href="<?php the_permalink();?>" title="<?php the_subtitle();?>"><?php the_subtitle();?></a></h4>
                 <p>Capacity: <?php the_data('capacity')?></p>
                 <p>Power: <?php the_data('power');?></p>
             </div>

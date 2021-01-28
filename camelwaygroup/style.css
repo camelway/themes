@@ -3,18 +3,18 @@
  * Theme URI: https://www.camelwaygroup.com
  * Description: theme for camelwaygroup.com
  * Version: 1.0.0
- * Author: Camelway SEO-Team
- * Author URI: https://www.camelway.com
+ * Author: Hito
+ * Author URI: https://www.hitoy.org
  * Tags: concrete plant, concrete mixer
  */
 @font-face{
     font-family:'icon';
     font-display: swap;
-    src: url('{{template_url}}media/font/icomoon.eot?ite8ak');
-    src: url('{{template_url}}media/font/icomoon.eot?ite8ak#iefix') format('embedded-opentype'),
-    url('{{template_url}}media/font/icomoon.ttf?ite8ak') format('truetype'),
-    url('{{template_url}}media/font/icomoon.woff?ite8ak') format('woff'),
-    url('{{template_url}}media/font/icomoon.svg?ite8ak#icomoon') format('svg');
+    src: url('{{template_url}}media/font/icomoon.eot?v=2');
+    src: url('{{template_url}}media/font/icomoon.eot?v=2#iefix') format('embedded-opentype'),
+          url('{{template_url}}media/font/icomoon.woff?v=2') format('woff'),
+          url('{{template_url}}media/font/icomoon.ttf?v=2') format('truetype'),
+          url('{{template_url}}media/font/icomoon.svg?v=2#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -51,11 +51,14 @@ article, aside, details, figcaption, figure,  footer, header, hgroup, menu, nav,
 body {
     font-size: 14px;
     font-family: Arial, sans-serif, verdana;
-	line-height: 1.8em;;
+    line-height: 1.8em;;
     background: #fff;
 }
 ol, ul {
-	list-style: none;
+    list-style: none;
+}
+em {
+    font-style: italic;
 }
 blockquote, q {
 	quotes: none;
@@ -74,7 +77,8 @@ a {
 }
 img {
     max-width: 100%;
-    height: auto;
+    height: auto !important;
+    max-height: 100% !important;
 }
 video {
     max-width: 100%;
@@ -88,7 +92,6 @@ h1 {
     font-weight: bold;
     line-height: 1.2em;
     color: #333;
-
 }
 h2 {
     font-size: 22px;
@@ -593,6 +596,10 @@ strong {
     width: calc(100% - 150px);
 }
 .side-showcase h4 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
     font-size: 16px;
     font-weight: bold;
     color: #333;
@@ -605,9 +612,10 @@ strong {
     vertical-align: sub;
     background-image: url('{{template_url}}media/production-args-icons.png');
     background-repeat: no-repeat;
+    background-size: 16px;
 }
 .side-showcase .text p:nth-child(3):before {
-    background-position: 0 -17px;
+    background-position: 0 -22px;
 }
 .side-share {
     margin-top: 30px;
@@ -648,6 +656,22 @@ strong {
     color: #e11d26;
     text-decoration: underline;
 }
+.side-articles {
+    margin-top: 20px;
+}
+.side-articles ul {
+    margin: 10px 0 15px 0;
+}
+.side-articles a {
+    display: block;
+    color: #549ccf;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.side-articles a:hover {
+    text-decoration: underline;
+}
 .entry-content {
     color: #666;
     line-height: 1.618em;
@@ -680,6 +704,51 @@ strong {
 }
 .entry-content table tr:nth-child(2n+1) {
     background: #eee;
+}
+.entry-content h2 {
+    margin: 20px 0 15px 0;
+}
+.entry-content h3 {
+    margin: 16px 0 10px 0;
+}
+.entry-content h4 {
+    margin: 14px 0 10px 0;
+}
+.entry-content a {
+    color: #549ccf;
+}
+.entry-content .content-navigation {
+    float: right;
+    max-width: 500px;
+    margin-top: 0;
+    margin-left: 20px;
+    padding: 10px 10px 15px 10px;
+    font-size: 13px;
+    line-height: 1.2em;
+    background: #f6f5f5;
+}
+.entry-content .content-navigation h2 {
+    margin: 10px 0 0 0;
+    font-size: 16px;
+    text-align: center;
+}
+.entry-content .content-navigation ul {
+    margin: 0;
+    counter-reset: item;
+}
+.entry-content .content-navigation li {
+    display: table;
+    counter-increment: item;
+    margin-top: 10px;
+}
+.entry-content .content-navigation li:before {
+    content: counters(item, ".") ". ";
+    display: table-cell;
+    padding-right: 0.6em;
+    font-family: Arial;
+}
+.entry-content .content-navigation li li:before {
+    content: counters(item, ".") " ";
 }
 .comments {
     margin-top: 30px;
@@ -806,10 +875,11 @@ strong {
     float: left;
     margin-right: 2%;
     height: 24px;
-    width: 25%;
+    width: 30%;
     border-bottom: 1px solid #ddd;
     color: #333;
     outline: none;
+    white-space: nowrap;
 }
 .comment-form .action .name:before,.comment-form .action .email:before, .comment-form .content:before {
     content: attr(data-tips);
@@ -828,6 +898,7 @@ strong {
     background: #ff353f;
     border-radius: 5px;
     cursor: pointer;
+    outline: none;
 }
 .comment-form .cancel {
     float: right;
@@ -892,6 +963,7 @@ strong {
     background: #e11d26;
 }
 .comments .loadmore {
+    display: block;
     margin-top: 30px;
     width: 100%;
     height: 44px;
@@ -1011,7 +1083,7 @@ strong {
 }
 .float-widget {
     position: fixed;
-    z-index: 30;
+    z-index: 50;
     right: -70px;
     bottom: 0;
     width: 300px;
@@ -1050,6 +1122,9 @@ strong {
 .float-widget p {
     float: left;
 }
+.float-widget.active p {
+    color: #fff;
+}
 .float-widget .close {
     float: right;
     width: 20px;
@@ -1067,6 +1142,9 @@ strong {
     height: 300px;
     padding: 15px;
     margin-top: 0;
+    background: transparent;
+}
+.float-widget.active .feedback-form {
     border-left: 1px solid #f6f6f6;
     border-right: 1px solid #f6f6f6;
     background: #fff;
@@ -1079,6 +1157,53 @@ strong {
     margin-bottom: 10px;
     font-size: 12px;
     line-height: 14px;
+    color: #999;
+}
+.float-contact {
+    position: fixed;
+    z-index: 30;
+    left: 0;
+    top: 38.2vh;
+    transform: translateY(-50%);
+}
+.float-contact a {
+    display: block;
+    width: 40px;
+    padding: 6px 8px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    line-height: 40px;
+    font-size: 40px;
+    font-family: icon;
+    color: #47bc2e;
+    background: #f2f2f2;
+    white-space: nowrap;
+    overflow: hidden;
+    outline: none;
+    transition: max-width .3s, background .2s;
+}
+.float-contact .emailus {
+    margin-top: 10px;
+    font-size: 36px;
+    color: #2f7cc3;
+}
+.float-contact a:hover {
+    max-width: 200px;
+    color: #fff;
+    background: #47bc2e;
+    box-shadow: 0 0 5px #47bc2e;
+    width: fit-content;
+}
+.float-contact .emailus:hover {
+    background: #307dc3;
+     box-shadow: 0 0 5px #307dc3;
+}
+.float-contact a:hover:before {
+    float: left;
+    margin-right: 4px;
+    font-size: 16px;
+    font-family: Arial;
+    content: attr(title);
 }
 .wrap-layer {
     position: fixed;
@@ -1126,7 +1251,7 @@ strong {
     margin-top: 10px;
 }
 .overflowhidden {
-    height: 100vw;
+    height: 100vh;
     overflow: hidden;
     box-sizing: border-box;
 }
@@ -1195,6 +1320,10 @@ strong {
     }
     .slidernav>ul ul {
         margin-left: 5px;
+        line-height: 35px;
+    }
+    .slidernav li {
+        white-space: nowrap;
     }
     .slidernav a {
         display: inline-block;
@@ -1215,17 +1344,36 @@ strong {
     .main {
         width: 100%;
     }
+   .float-contact a {
+        width: 30px;
+        padding: 5px;
+        line-height: 30px;
+        font-size: 30px;
+    }
+    .float-contact .emailus {
+        font-size: 28px;
+    }
+    .float-contact a:hover:before {
+        content: '';
+    }
     .sidebar {
         display: none;
     }
-
     .footer .foot-navs {
         margin-left: 0;
     }
-
+    .footer .foot-catalog {
+        margin-left: 0;
+    }
 }
 @media(max-width:800px){
+    h1 {
+        font-size: 26px;
+    }
     .header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
         height: 40px;
         line-height: 40px;
     }
@@ -1242,20 +1390,11 @@ strong {
     .footer .foot-catalog li {
         width: 50%;
     }
-
 }
 
-@media(max-width:400px){
-    body {
-        padding-top: 40px;
-    }
-    .header {
-        position: fixed;
-        top: 0;
-        z-index: 20;
-    }
+@media(max-width:500px){
     .slidernav.show {
-        padding: 10px 5px 0 20px;
+        padding: 10px 10px 0 20px;
     }
     .feedback-form p {
         width: 100%;
@@ -1267,13 +1406,17 @@ strong {
     }
     .float-widget {
         width: 100%;
-        right: calc(55px - 100%);
+        right: calc(65px - 100%);
+        bottom: 10px;
     }
     .float-widget.active {
         right: 0;
     }
-    .float-widget .title {
+    .float-widget .title{
         background: transparent;
+    }
+    .float-widget p {
+        color: transparent;
     }
     .float-widget .title:before {
         background: #e11d26;
@@ -1295,6 +1438,13 @@ strong {
     }
     .comment-form .action.slidedown {
         height: 70px;
+    }
+    .entry-content .content-navigation {
+        float: none;
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0;
     }
 }
 @keyframes slidernav-slideout {

@@ -1,0 +1,64 @@
+.main {
+    min-height: calc(100vh - 604px);
+}
+.main form {
+    display: block;
+    width: 100%;
+    height: 48px;
+    line-height: 30px;
+    box-shadow: 0 0 10px rgba(31,76,150,.2);
+}
+.main form input[type=text] {
+   float: left;
+   width: calc(100% - 70px);
+   height: 20px;
+   margin-top: 15px;
+   border-right: 1px solid #eee;
+   text-indent: 30px;
+   font-size: 16px;
+}
+.main form input[type=submit] {
+    float: right;
+    width: 65px;
+    height: 30px;
+    margin-top: 10px;
+    font-size: 18px;
+    font-family: icon;
+    color: #4ed3f3;
+    cursor: pointer;
+}
+.main .result_num {
+    margin-top: 10px;
+    color: #aaafb4;
+}
+
+/**热门产品**/
+.hotdeals {
+    margin-top: 20px;
+}
+.hot-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.hot-items li {
+    width: 25%;
+    margin-top: 15px;
+    line-height: 1em;
+    color: #3778e4;
+  
+}
+.hot-items a {
+    text-decoration: underline;
+}
+
+@media(max-width:800px){
+    .hot-items li {
+        width: 30%;
+    }
+}
+@media(max-width:400px){
+    .hot-items li {
+        width: 100%;
+    }
+}

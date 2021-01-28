@@ -5,7 +5,7 @@
         <div class="explain">
             <p>The page was not found on this server.</p>
             <a href="<?php dminfo('home_url')?>">Go Home</a>
-            <a href="#">Contact Us</a>
+            <a href="<?php the_permalink(2)?>">Contact Us</a>
         </div>
     </div>
 </div>

@@ -4,25 +4,25 @@
         <?php breadcrumb_nav();?>
         <div class="contact-info">
             <h1>Contact Us</h1> 
-            <p>If you have any questiones, please feel free to contact us.</p>
+            <p>Have a question about our machine & service? please feel free to contact us.</p>
             <h2>China Head Office</h2>
             <ul>
                 <li><span>Phone:</span>0086-18838109566</li>
-                <li><span>Email:</span>info@camelway.com</li>
+                <li><span>Email:</span>quote@camelway.com</li>
             </ul>
-            <div class="addr">Address: No. 446 ZhengShang Road, Zhengzhou, Henan Prov., China</div>
+            <div class="addr">China Headquarters: No. 446 ZhengShang Road, Zhengzhou, Henan Prov</div>
         </div>
     </div>
 </div>
 
 <div class="wrap contact-body">
     <div class="container">
-        Camelway group are always ready to help you, no matter technical consultation, program design, equipment installation, operation training or after-sales service. There are experienced technical engineers, installation engineers, sale managers in our professional team, what we do is not only helping you achieve your recent business goal, but providing reasonable advice to keep you competitive in your market.
+        As a Chinese Construction Machinery Manufacturer, Camleway Group are committed to providing affordable and accessible equipment for infrastructure projects in developing countries. We help customers design solutions, select equipment, install & maintain as well as provide after-sales service. Through online and offline sales networks around the world, you can quickly get in touch with us. We recommend contacting us by filling out the form.
         <ul>
-            <li><span>Pre-Sales advice</span></li>
+            <li><span>Pre-Sales Advice</span></li>
             <li><span>Design Program</span></li>
             <li><span>Site inspection</span></li>
-            <li><span>After-Sales visit</span></li>
+            <li><span>After-Sales Service</span></li>
         </ul>
     </div>
 </div>
@@ -46,9 +46,9 @@
         <ul>
 <?php
 $feedback_query = new DM_Feedback_Query();
-$comments = $feedback_query->query(array('number'=>6, 'group'=>'comment', 'status'=>'approved'));
+$comments = $feedback_query->query(array('number'=>6, 'group'=>'comment', 'status'=>'approved', 'parent'=>0));
 foreach($comments as $comment){
-    $showusername = (strlen($comment->feedback_user_name) > 3) ? substr($comment->feedback_user_name, 0, 3).'***' : $comment->feedback_user_name;
+    $showusername = (mb_strlen($comment->feedback_user_name) > 3) ? mb_substr($comment->feedback_user_name, 0, 3).'***' : $comment->feedback_user_name;
 ?>
             <li>
                 <div><span class="author"><?php echo $showusername?></span> <span class="pubdate"><?php echo $comment->feedback_date;?></span></div>
